@@ -14,4 +14,7 @@ public class Resolver {
         return null;
     }
 
+    private int[][] recursive_Backtracking(int[][] assignment, Variable[][] csp){
+        return null;
+    }
 }
