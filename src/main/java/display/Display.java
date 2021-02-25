@@ -20,9 +20,7 @@ public class Display {
     //Panel pour afficher les cases
     private JPanel panel;
 
-    //Affichage graphique de l'environnement : tableau 2D de 11 par 11. Chaque Label représente une case (sauf certains labels qui représentent des lignes)
-    private JLabel[][] tab_labels = new JLabel[11][11];
-
+    //Affichage graphique de l'environnement : tableau 2D de 9 par 9. Chaque Label représente une case
     private JLabel[][] tab_labels_ = new JLabel[9][9];
 
     //Barre de menu pour la fenêtre
@@ -171,7 +169,7 @@ public class Display {
      * @param value valeure à afficher
      */
     public void placeVariable(int x, int y, int value){
-        this.tab_labels[x][y].setText(Integer.toString(value));
+        this.tab_labels_[x][y].setText(Integer.toString(value));
     }
 
     /**
@@ -180,7 +178,7 @@ public class Display {
      * @param y coordonnée y de la case
      */
     public void deleteVariable(int x, int y){
-        this.tab_labels[x][y].setText(null);
+        this.tab_labels_[x][y].setText(null);
     }
 
 }
