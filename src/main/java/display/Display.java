@@ -2,6 +2,7 @@ package display;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.border.MatteBorder;
 import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,6 +23,8 @@ public class Display {
     //Affichage graphique de l'environnement : tableau 2D de 11 par 11. Chaque Label représente une case (sauf certains labels qui représentent des lignes)
     private JLabel[][] tab_labels = new JLabel[11][11];
 
+    private JLabel[][] tab_labels_ = new JLabel[9][9];
+
     //Barre de menu pour la fenêtre
     private JMenuBar menubar = new JMenuBar();
 
@@ -32,28 +35,35 @@ public class Display {
         //Création de la fenetre principale
         frame = new JFrame();
         this.panel = new JPanel();
-        //Création d'une bordure pour délimiter les cases.
-        Border border = BorderFactory.createLineBorder(Color.black,2);
+        //Création des bordures pour délimiter les cases.
+        Border border_side = new MatteBorder(1,5,1,1,Color.black);
+        Border border_top = new MatteBorder(5,1,1,1,Color.black);
+        Border border = new MatteBorder(1,1,1,1,Color.black);
+        Border border_side_top = new MatteBorder(5,5,1,1,Color.black);
 
         //Création du tableau de cases.
         int i = 0;
         int j = 0;
-        while(i<11){
-            while(j<11){
+        while(i<9){
+            while(j<9){
                 //Case classiques
                 JLabel label = new JLabel("", SwingConstants.CENTER);
                 label.setFont(new Font("Arial", Font.PLAIN, 30));
-                this.tab_labels[i][j] = label;
+                //this.tab_labels[i][j] = label;
+                this.tab_labels_[i][j] = label;
                 label.setPreferredSize(new Dimension(50,50));
-                label.setBackground(Color.gray);
-                label.setBorder(border);
-                //Ajout de case noires pour faire les lignes
-                if(i==3 || i==7 || j==3 || j==7){
-                    this.tab_labels[i][j] = label;
-                    label.setPreferredSize(new Dimension(60,60));
-                    label.setOpaque(true);
-                    label.setBackground(Color.black);
+                //Gestion des bordures pour découper le jeu en 9 cases de 9 cases
+                if(j==3 || j==6){
+                    label.setBorder(border_side);
+                } else {
                     label.setBorder(border);
+                }
+                if(i==3 || i==6) {
+                    if (j == 3 || j == 6) {
+                        label.setBorder(border_side_top);
+                    } else {
+                        label.setBorder(border_top);
+                    }
                 }
                 j++;
             }
@@ -64,16 +74,17 @@ public class Display {
         //Ajout des cases créées à la fenêtre graphique
         i = 0;
         j = 0;
-        while(i<11){
-            while(j<11){
-                this.panel.add(this.tab_labels[j][i]);
+        while(i<9){
+            while (j < 9) {
+                this.panel.add(this.tab_labels_[i][j]);
                 j++;
             }
             j=0;
             i++;
         }
-        //Affichage des cases selon une grille de 11 par 11
-        this.panel.setLayout(new GridLayout(11,11));
+
+        //Affichage des cases selon une grille de 9 par 9
+        this.panel.setLayout(new GridLayout(9,9));
         frame.add(this.panel);
 
         //Ajout d'un menu pour charger les fichiers de sudoku
@@ -100,7 +111,7 @@ public class Display {
         frame.setPreferredSize(new Dimension(800, 800));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Sudoku Solver");
-        frame.setResizable(false);
+        frame.setResizable(true);
         frame.pack();
         frame.setVisible(true);
     }
@@ -113,17 +124,27 @@ public class Display {
     private void load(File file) throws FileNotFoundException {
 
         Scanner scanner = new Scanner(file);
-        int linenum = 0;
+        int compteurcar = 0;
+        int compteurline = 0;
         //on itère sur chaque ligne et sur chaque caracètre de chaque ligne
         while(scanner.hasNextLine()){
             String line = scanner.nextLine();
             for (int i =0; i<line.length(); i++) {
-                //si le caracètre est un integer, alors on l'affiche sur la fenêtre graphique
-                if(isInteger(String.valueOf(line.charAt(i)))){
-                    this.tab_labels[i][linenum].setText(String.valueOf(line.charAt(i)));
+                //si le caractère courant est un '!', alors on décrémente le compteur de caractères, pour ne pas fausser le nombre de caractères sur une ligne (Pour en garder 9 au lieu de 11)
+                if(line.charAt(i)=='!') {
+                    compteurcar--;
+                //si le caractère courant est un '-', alors on décrémente le compteur de lignes et on break la boucle pour ne pas fausser le nombre total de lignes (Pour en garder 9 au lieu de 11)
+                } else if(line.charAt(i)=='-'){
+                    compteurline--;
+                    break;
+                    //si le caracètre est un integer, alors on l'affiche sur la fenêtre graphique
+                } else if(isInteger(String.valueOf(line.charAt(i)))){
+                    this.tab_labels_[compteurline][compteurcar].setText(String.valueOf(line.charAt(i)));
                 }
+                compteurcar++;
             }
-            linenum++;
+            compteurcar=0;
+            compteurline++;
         }
     }
 
@@ -141,7 +162,6 @@ public class Display {
             valid = false;
         }
         return valid;
-
     }
 
     /**
