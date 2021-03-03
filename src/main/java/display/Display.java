@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -83,7 +85,26 @@ public class Display {
 
         //Affichage des cases selon une grille de 9 par 9
         this.panel.setLayout(new GridLayout(9,9));
-        frame.add(this.panel);
+        frame.setLayout(new BorderLayout());
+        frame.add(this.panel, BorderLayout.CENTER);
+
+        //création du bouton pour lancer le resolver
+        JPanel buttonPanel = new JPanel();
+        JButton runButton = new JButton();
+        runButton.setPreferredSize(new Dimension(75, 30));
+        runButton.setText("Run");
+        runButton.setVisible(true);
+        runButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+
+            }
+        });
+        buttonPanel.setLayout(new BorderLayout());
+        buttonPanel.add(runButton, BorderLayout.LINE_START);
+        frame.add(buttonPanel, BorderLayout.PAGE_END);
+
+        buttonPanel.setVisible(true);
 
         //Ajout d'un menu pour charger les fichiers de sudoku
         JMenu menu = new JMenu("Fichier");
