@@ -1,5 +1,8 @@
 package display;
 
+import resolver.Resolver;
+import resolver.Variable;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
@@ -27,6 +30,9 @@ public class Display {
 
     //Barre de menu pour la fenêtre
     private JMenuBar menubar = new JMenuBar();
+
+    //instance du resolver
+    private Resolver resolver;
 
     /**
      * Constructeur (permet de créer la fenêtre, les cases, et le menu)
@@ -94,12 +100,7 @@ public class Display {
         runButton.setPreferredSize(new Dimension(75, 30));
         runButton.setText("Run");
         runButton.setVisible(true);
-        runButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent actionEvent) {
-
-            }
-        });
+        runButton.addActionListener(new RunListener(this));
         buttonPanel.setLayout(new BorderLayout());
         buttonPanel.add(runButton, BorderLayout.LINE_START);
         frame.add(buttonPanel, BorderLayout.PAGE_END);
@@ -133,6 +134,8 @@ public class Display {
         frame.setResizable(true);
         frame.pack();
         frame.setVisible(true);
+
+        resolver = new Resolver(this);
     }
 
     /**
@@ -202,4 +205,37 @@ public class Display {
         this.tab_labels_[x][y].setText(null);
     }
 
+    public void runResolver(){
+        Integer[][] sudoku = new Integer[9][9];
+        int x = 0;
+        int y = 0;
+
+        while (x< 9){
+            while (y< 9){
+                if(!tab_labels_[x][y].getText().equals("")){
+                    sudoku[x][y] = Integer.valueOf(tab_labels_[x][y].getText());
+                }
+                y++;
+            }
+            y = 0;
+            x++;
+        }
+
+        sudoku = resolver.resolve(sudoku);
+        if(sudoku == null){
+            System.out.println("fail");
+        }else {
+            x = 0;
+            y = 0;
+
+            while (x< 9){
+                while (y< 9){
+                    placeVariable(x, y, sudoku[x][y]);
+                    y++;
+                }
+                y = 0;
+                x++;
+            }
+        }
+    }
 }
