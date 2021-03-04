@@ -190,7 +190,7 @@ public class Display {
      * permet de placer une valeur sur une case donnée
      * @param x coordonnée x de la case
      * @param y coordonnée y de la case
-     * @param value valeure à afficher
+     * @param value valeur à afficher
      */
     public void placeVariable(int x, int y, int value){
         this.tab_labels_[x][y].setText(Integer.toString(value));
