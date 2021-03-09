@@ -1,6 +1,8 @@
 package resolver;
 
 import display.Display;
+
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class Resolver {
@@ -164,8 +166,6 @@ public class Resolver {
             y = 0;
             x++;
         }
-        csp[0][0].Printvoisin();
-        System.out.println("test");
         return recursive_Backtracking(assignment, csp);
     }
 
@@ -174,11 +174,15 @@ public class Resolver {
         if (isComplete(assignment)){
             return assignment;
         }
-        Variable var = selectUnassignedVariable(csp, assignment);
-        HashSet<Integer> values = var.getDomains();
+        Variable var = null;
+        try {
+            var = selectUnassignedVariable(csp, assignment);
+        } catch (Exception e) {
+            System.out.println("no unassigned Variable");
+        }
+        ArrayList<Integer> values = orderDomainValue(var, assignment, csp);
         for (Integer value : values){
             assign(assignment, var, value);
-            System.out.println("pos : "+ var.getxPos() + " "+var.getyPos()+ " value "+ value);
             if (isConsistent(assignment, csp)){
                 result = recursive_Backtracking(assignment, csp);
                 if (result != null){
@@ -212,7 +216,7 @@ public class Resolver {
         return true;
     }
 
-    private Variable selectUnassignedVariable(Variable[][] csp, Integer[][] assignment) {
+    private Variable selectUnassignedVariable(Variable[][] csp, Integer[][] assignment) throws Exception {
         int x = 0;
         int y = 0;
 
@@ -226,7 +230,7 @@ public class Resolver {
             y = 0;
             x++;
         }
-        return null;
+        throw new Exception();
     }
 
     private boolean isComplete(Integer[][] assignment){
@@ -261,6 +265,43 @@ public class Resolver {
 
         assignment[xPos][yPos] = null;
         return assignment;
+    }
+
+    /**
+     * Ordonne les valeurs du domaine de la variable de telle sorte à avoir les valeurs les moins contraignantes en premier
+     * @param variable variable dont on trie le domaine
+     * @param assignment valeurs des variables déjà assigné
+     * @param csp tableau contenant les variables du problème
+     * @return liste ordonné de valeur
+     */
+    private ArrayList<Integer> orderDomainValue(Variable variable, Integer[][] assignment, Variable[][] csp){
+        ArrayList<Integer> orderedDomain = new ArrayList<>();
+        ArrayList<Integer> orderedScore = new ArrayList<>();
+        // pour chaque valeur du domaine on calcule un score correspondant au nombre de variable dont le domaine est réduit si la valeur est assigné à la variable de départ.
+        for (Integer value: variable.getDomains()) {
+            int score = 0;
+            // pour chaque voisin de la variable de départ on assigne la valeur et regarde si l'assignement est consistant
+            for (Variable neighbor: variable.getNeighbors()) {
+                if (assignment[neighbor.getxPos()][neighbor.getyPos()] == null){
+                    assignment[neighbor.getxPos()][neighbor.getyPos()] = value;
+                    // si l'assignement est consistant cela veux dire que le domaine de la variable voisine sera réduite si on attribu la valeur à la variable de départ.
+                    // on ajoute alors 1 au score de cette valeur
+                    if(isConsistent(assignment, csp)){
+                        score++;
+                    }
+                    assignment[neighbor.getxPos()][neighbor.getyPos()] = null;
+                }
+            }
+
+            // on trie les valeur dans une liste en fonction du score calculé
+            int i = 0;
+            while (i < orderedScore.size() && score > orderedScore.get(i)){
+                i++;
+            }
+            orderedScore.add(i, score);
+            orderedDomain.add(i, value);
+        }
+        return orderedDomain;
     }
 }
 
