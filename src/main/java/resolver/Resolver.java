@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 
 /**
- * Classe principale du programme. Elle comprend la totalité des algorithme de résolution de probleme.
+ * Classe principale du programme. Elle comprend la totalité des algorithmes de résolution du probleme.
  * Son fonctionnement est basé sur les problemes a satisfaction de contrainte et a pour algorithme principal backtracking
  */
 public class Resolver {
@@ -235,7 +235,7 @@ public class Resolver {
 
     /**
      * Sélection d'un variable selon l'algorithme MRV (Most Remaining Value)
-     * @param csp Tableau de variable qui permet de récupérer ou d'assigner une variable à une position donnée
+     * @param csp Tableau de variables qui permet de récupérer ou d'assigner une variable à une position donnée
      * @param assignment Tableau d'entier permettant de savoir si une variable à une position donnée est assignée ou non
      * @return La variable choisie selon l'algorithme MRV (et Degree Heuristic selon son appel)
      */
@@ -366,7 +366,7 @@ public class Resolver {
     }
 
     /**
-     * Désasigne un variable
+     * Dés-assigne une variable
      * @param assignment Tableau de valeur correspondant à l'assignement des variables
      * @param variable Variable à désasigne
      */
@@ -446,7 +446,7 @@ public class Resolver {
     /**
      * fonction testant pour un arc donnée si des valeurs du domaine du membre de gauche de l'arc sont inconsitant avec le domaine du membre de droite.
      * Si c'est le cas la valeur est retirée du domaine de la variable.
-     * @param arc Arc dont on étudit la consistance.
+     * @param arc Arc dont on étudie la consistance.
      * @return True si le domaine de la variable à été modifié, false sinon.
      */
     private boolean removeInconsistentValue(Pair<Variable, Variable> arc) {
