@@ -11,7 +11,7 @@ import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 /**
- * Classe Display qui permet de gérer l'affcihage graphique du sudoku et également de charger une grille de sudoku
+ * Classe Display qui permet de gérer l'affichage graphique du sudoku et également de charger une grille de sudoku
  *
  */
 public class Display {

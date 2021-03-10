@@ -2,21 +2,29 @@ package resolver;
 
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
 import java.util.ArrayList;
 import java.util.LinkedList;
 
+/**
+ * Classe principale du programme. Elle comprend la totalité des algorithme de résolution de probleme.
+ * Son fonctionnement est basé sur les problemes a satisfaction de contrainte et a pour algorithme principal backtracking
+ */
 public class Resolver {
 
+    /**
+     * Fonction principale de la classe resolver. Elle initialise les variable interne comme le csp et l'assignement des variable et lance la résolution.
+     * @param grid Valeur initiale des variable du sudoku représenté dans un tableau
+     * @return Assignement complet et consistant de la grille de sudoku
+     */
     public Integer[][] resolve(Integer[][] grid){
         Variable[][] csp = new Variable[9][9];
         Integer[][] assignment = new Integer[9][9];
         int x = 0;
         int y = 0;
 
+        // Chargement de la grille de départ dans les variables du programme
         while (x< 9){
             while (y< 9){
-                assignment[x][y] = grid[x][y];
                 if(grid[x][y] != null){
                     csp[x][y] = new Variable(x, y, grid[x][y]);
                 }else {
@@ -31,6 +39,7 @@ public class Resolver {
         x = 0;
         y = 0;
 
+        // Atribution des contraintes binaires pour chaque variable
         while (x< 9){
             while (y< 9){
                 int i = 0;
@@ -165,10 +174,17 @@ public class Resolver {
             y = 0;
             x++;
         }
+        // Préprocessing avec l'algorithme AC-3 pour réduire le domaine des variables
         AC_3(csp);
         return recursive_Backtracking(assignment, csp);
     }
 
+    /**
+     * Fonction de résolution du problème. Il s'agit de l'algorithme de résolution recursive backtracking
+     * @param assignment Assignement des variables initialement vide
+     * @param csp Tableau de variable représentant le probleme à résoudre
+     * @return Assignement complet et consistant si une solution existe
+     */
     private Integer[][] recursive_Backtracking(Integer[][] assignment, Variable[][] csp){
         Integer[][] result;
         if (isComplete(assignment)){
@@ -190,6 +206,12 @@ public class Resolver {
         return null;
     }
 
+    /**
+     * Fonction vérifiant si un assignement de variable est consitant avec les contraintes du probleme
+     * @param assignment Assignement de variable dont on doit vérifier la consistance
+     * @param csp Ensemble de variable représentant le problème
+     * @return True si consistant false sinon
+     */
     private boolean isConsistent(Integer[][] assignment, Variable[][] csp) {
         int x = 0;
         int y = 0;
@@ -220,15 +242,15 @@ public class Resolver {
     private Variable selectUnassignedVariable(Variable[][] csp, Integer[][] assignment) {
         int x = 0;
         int y = 0;
-        //Nombre de valeurs légales de la variable précédente (par défaut initialisé à 9 car c'est le nombre de valeurs légales le plus élevé théoriquement)
+        // Nombre de valeurs légales de la variable précédente (par défaut initialisé à 9 car c'est le nombre de valeurs légales le plus élevé théoriquement)
         int legal_values = 9;
-        //Nombre de valeurs légales de la variable courante
+        // Nombre de valeurs légales de la variable courante
         int new_legal_values = 0;
-        //Boolean de test de légalité d'une valeur pour une variable
+        // Boolean de test de légalité d'une valeur pour une variable
         boolean legal = true;
-        //Variable à retourner
+        // Variable à retourner
         Variable choosen = null;
-        //Parcours du tableau pour trouver toutes les cases vides (non-assignées)
+        // Parcours du tableau pour trouver toutes les cases vides (non-assignées)
         while (x< 9){
             while (y< 9){
                 if (assignment[x][y] == null) {
@@ -245,25 +267,25 @@ public class Resolver {
                                 }
                             }
                         }
-                        /*Une fois que tous les voisins sont passés,
-                        / Si le test de légalité est vrai (ce qui veut dire que notre valeur courante n'est pas la même que la valeur de l'un des voisins)
-                        / Alors le nombre de valeurs légales de la variable courante est augmentée
+                        /* Une fois que tous les voisins sont passés,
+                        /   Si le test de légalité est vrai (ce qui veut dire que notre valeur courante n'est pas la même que la valeur de l'un des voisins)
+                        /   Alors le nombre de valeurs légales de la variable courante est augmentée
                         */
                         if(legal){
                             new_legal_values++;
                         }
-                        //La légalité est remise à sa valeur par défaut pour la prochaine valeur à tester
+                        // La légalité est remise à sa valeur par défaut pour la prochaine valeur à tester
                         legal = true;
                     }
-                    /*Une fois que toutes les valeurs sont passées pour la variable courante,
-                    / On regarde si le nombre de valeurs légales de la variable courante est inférieur au nombre de valeurs légales de la variable précédente
+                    /* Une fois que toutes les valeurs sont passées pour la variable courante,
+                    /   On regarde si le nombre de valeurs légales de la variable courante est inférieur au nombre de valeurs légales de la variable précédente
                     */
                     if(new_legal_values<legal_values){
-                        //On met à jour le nombre de valeurs légales de la variable précédente car la nouvelle valeur est "mieux"
+                        // On met à jour le nombre de valeurs légales de la variable précédente car la nouvelle valeur est "mieux"
                         legal_values = new_legal_values;
-                        //On considère également que la variable courante est donc celle qui sera retenue pour être retournée car elle comporte le nombre de valeurs légales le moins élevé
+                        // On considère également que la variable courante est donc celle qui sera retenue pour être retournée car elle comporte le nombre de valeurs légales le moins élevé
                         choosen = csp[x][y];
-                        //En cas d'égalité entre le nombre de valeurs légales de la variable précédente et de la variable courante, appel de Degree_heuristic pour faire un choix
+                        // En cas d'égalité entre le nombre de valeurs légales de la variable précédente et de la variable courante, appel de Degree_heuristic pour faire un choix
                     } else if(new_legal_values==legal_values){
                         choosen = degree_heuristic(choosen, csp[x][y], assignment);
                     }
@@ -282,18 +304,18 @@ public class Resolver {
      * @return la variable avec le plus grand nombre de contraintes
      */
     private Variable degree_heuristic(Variable var1, Variable var2, Integer[][] assignment){
-        //Nombre de contraintes pour la variable 2
+        // Nombre de contraintes pour la variable 2
         int constaints_var2 = 0;
-        //Nombre de contraintes pour la variable 1
+        // Nombre de contraintes pour la variable 1
         int constaints_var1 = 0;
 
-        //On compte le nombre de contraintes de la variable 2 (nombre de voisins non-assignés)
+        // On compte le nombre de contraintes de la variable 2 (nombre de voisins non-assignés)
         for (Variable neighbor : var2.getNeighbors()) {
             if(assignment[neighbor.getxPos()][neighbor.getyPos()] == null){
                 constaints_var2++;
             }
         }
-        //On compte le nombre de contraintes de la variable 1 (nombre de voisins non-assignés)
+        // On compte le nombre de contraintes de la variable 1 (nombre de voisins non-assignés)
         for (Variable neighbor : var1.getNeighbors()) {
             if(assignment[neighbor.getxPos()][neighbor.getyPos()] == null){
                 constaints_var1++;
@@ -307,6 +329,11 @@ public class Resolver {
         }
     }
 
+    /**
+     * Fonction vérifiant si l'assignement donné est complet
+     * @param assignment Assignement dont on doit vérifier la complétude
+     * @return True si complet false sinon
+     */
     private boolean isComplete(Integer[][] assignment){
        int x = 0;
        int y = 0;
@@ -324,6 +351,12 @@ public class Resolver {
        return true;
     }
 
+    /**
+     * Assigne une valeur a une variable
+     * @param assignment Tableau de valeur correspondant à l'assignement des variables
+     * @param variable Variable à assigner
+     * @param value Valeur à assigner à la variable
+     */
     private void assign(Integer[][] assignment, Variable variable, int value){
         int xPos = variable.getxPos();
         int yPos = variable.getyPos();
@@ -332,6 +365,11 @@ public class Resolver {
 
     }
 
+    /**
+     * Désasigne un variable
+     * @param assignment Tableau de valeur correspondant à l'assignement des variables
+     * @param variable Variable à désasigne
+     */
     private void unassign(Integer[][] assignment, Variable variable){
         int xPos = variable.getxPos();
         int yPos = variable.getyPos();
@@ -356,7 +394,7 @@ public class Resolver {
             for (Variable neighbor: variable.getNeighbors()) {
                 if (assignment[neighbor.getxPos()][neighbor.getyPos()] == null){
                     assignment[neighbor.getxPos()][neighbor.getyPos()] = value;
-                    // si l'assignement est consistant cela veux dire que le domaine de la variable voisine sera réduite si on attribu la valeur à la variable de départ.
+                    // si l'assignement est consistant cela veut dire que le domaine de la variable voisine sera réduit si on attribu la valeur à la variable de départ.
                     // on ajoute alors 1 au score de cette valeur
                     if(isConsistent(assignment, csp)){
                         score++;
@@ -365,7 +403,7 @@ public class Resolver {
                 }
             }
 
-            // on trie les valeur dans une liste en fonction du score calculé
+            // on trie les valeurs dans une liste en fonction du score calculé
             int i = 0;
             while (i < orderedScore.size() && score > orderedScore.get(i)){
                 i++;
@@ -377,8 +415,8 @@ public class Resolver {
     }
 
     /**
-     * fonction de propagation des contrainte sur les arcs.
-     * @param csp ensemble de variable du problème dont les domains vont etre réduit
+     * Fonction de propagation des contraintes sur les arcs.
+     * @param csp Ensemble de variable du problème dont les domains vont etre réduits
      */
     private void AC_3(Variable[][] csp){
         LinkedList<Pair<Variable,Variable>> queue = new LinkedList<>();
@@ -406,10 +444,10 @@ public class Resolver {
     }
 
     /**
-     * fonction testant pour un arc donnée si des valeurs du domains du membre de gauche de l'arc sont inconsitant avec le domaine du membre de droite.
-     * si c'est le cas la valeur est retiré du domaine de la variable.
-     * @param arc arc dont on étudit la consistance.
-     * @return true si le domaine de la variable à été modifié, false sinon.
+     * fonction testant pour un arc donnée si des valeurs du domaine du membre de gauche de l'arc sont inconsitant avec le domaine du membre de droite.
+     * Si c'est le cas la valeur est retirée du domaine de la variable.
+     * @param arc Arc dont on étudit la consistance.
+     * @return True si le domaine de la variable à été modifié, false sinon.
      */
     private boolean removeInconsistentValue(Pair<Variable, Variable> arc) {
         boolean removed = false;
