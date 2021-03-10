@@ -6,8 +6,8 @@ import java.util.HashSet;
 public class Variable {
 
 
-    private HashSet<Variable> neighbors;
-    private HashSet<Integer> domains;
+    private final HashSet<Variable> neighbors;
+    private final HashSet<Integer> domains;
     private final int xPos;
     private final int yPos;
 
@@ -16,6 +16,15 @@ public class Variable {
         this.yPos = yPos;
 
         domains = new HashSet<>(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
+        neighbors = new HashSet<>();
+    }
+
+    public Variable(int xPos, int yPos, Integer assignment) {
+        this.xPos = xPos;
+        this.yPos = yPos;
+
+        domains = new HashSet<>();
+        domains.add(assignment);
         neighbors = new HashSet<>();
     }
 

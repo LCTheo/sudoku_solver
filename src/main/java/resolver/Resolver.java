@@ -1,9 +1,12 @@
 package resolver;
 
 import display.Display;
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Resolver {
 
@@ -22,8 +25,13 @@ public class Resolver {
 
         while (x< 9){
             while (y< 9){
-                csp[x][y] = new Variable(x, y);
                 assignment[x][y] = grid[x][y];
+                if(grid[x][y] != null){
+                    csp[x][y] = new Variable(x, y, grid[x][y]);
+                }else {
+                    csp[x][y] = new Variable(x, y);
+                }
+
                 y++;
             }
             y = 0;
@@ -166,6 +174,7 @@ public class Resolver {
             y = 0;
             x++;
         }
+        csp = AC_3(csp);
         return recursive_Backtracking(assignment, csp);
     }
 
@@ -302,6 +311,54 @@ public class Resolver {
             orderedDomain.add(i, value);
         }
         return orderedDomain;
+    }
+
+    private Variable[][] AC_3(Variable[][] csp){
+        LinkedList<Pair<Variable,Variable>> queue = new LinkedList<>();
+        int i = 0;
+        int j = 0;
+        while (i < 9){
+            while (j< 9){
+                Variable var = csp[i][j];
+                for (Variable neighbor: var.getNeighbors()){
+                    queue.add(new ImmutablePair<>(var, neighbor));
+                }
+                j++;
+            }
+            j =0;
+            i++;
+        }
+        while (!queue.isEmpty()){
+            Pair<Variable,Variable> arc = queue.remove();
+            if(removeInconsistentValue(arc)){
+                for (Variable neighbor: arc.getLeft().getNeighbors()){
+                    queue.add(new ImmutablePair<>(arc.getLeft(), neighbor));
+                }
+            }
+        }
+        return csp;
+    }
+
+    private boolean removeInconsistentValue(Pair<Variable, Variable> arc) {
+        boolean removed = false;
+        boolean inconsitent;
+        ArrayList<Integer> toRemove = new ArrayList<>();
+        for (Integer valueX:arc.getLeft().getDomains()) {
+            inconsitent = true;
+            for (Integer valueY: arc.getRight().getDomains()) {
+                if(!valueX.equals(valueY)){
+                    inconsitent = false;
+                }
+            }
+            if (inconsitent){
+                toRemove.add(valueX);
+                removed = true;
+            }
+        }
+        for (Integer value: toRemove) {
+            arc.getLeft().removeFromDomains(value);
+        }
+        return removed;
     }
 }
 
