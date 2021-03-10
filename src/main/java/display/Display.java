@@ -148,6 +148,7 @@ public class Display {
         Scanner scanner = new Scanner(file);
         int compteurcar = 0;
         int compteurline = 0;
+        resetSudoku();
         //on itère sur chaque ligne et sur chaque caracètre de chaque ligne
         while(scanner.hasNextLine()){
             String line = scanner.nextLine();
@@ -167,6 +168,19 @@ public class Display {
             }
             compteurcar=0;
             compteurline++;
+        }
+    }
+
+    private void resetSudoku() {
+        int i = 0;
+        int j = 0;
+        while (i < 9){
+            while (j < 9){
+                tab_labels_[i][j].setText("");
+                j++;
+            }
+            j = 0;
+            i++;
         }
     }
 
@@ -202,7 +216,7 @@ public class Display {
      * @param y coordonnée y de la case
      */
     public void deleteVariable(int x, int y){
-        this.tab_labels_[x][y].setText(null);
+        this.tab_labels_[x][y].setText("");
     }
 
     public void runResolver(){
