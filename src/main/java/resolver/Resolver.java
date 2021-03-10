@@ -1,21 +1,12 @@
 package resolver;
 
-import display.Display;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 
 public class Resolver {
-
-    private final Display display;
-
-    public Resolver(Display display) {
-        this.display = display;
-
-    }
 
     public Integer[][] resolve(Integer[][] grid){
         Variable[][] csp = new Variable[9][9];
@@ -174,7 +165,7 @@ public class Resolver {
             y = 0;
             x++;
         }
-        csp = AC_3(csp);
+        AC_3(csp);
         return recursive_Backtracking(assignment, csp);
     }
 
@@ -333,21 +324,19 @@ public class Resolver {
        return true;
     }
 
-    private Integer[][] assign(Integer[][] assignment, Variable variable, int value){
+    private void assign(Integer[][] assignment, Variable variable, int value){
         int xPos = variable.getxPos();
         int yPos = variable.getyPos();
 
         assignment[xPos][yPos] = value;
 
-        return assignment;
     }
 
-    private Integer[][] unassign(Integer[][] assignment, Variable variable){
+    private void unassign(Integer[][] assignment, Variable variable){
         int xPos = variable.getxPos();
         int yPos = variable.getyPos();
 
         assignment[xPos][yPos] = null;
-        return assignment;
     }
 
     /**
@@ -387,7 +376,11 @@ public class Resolver {
         return orderedDomain;
     }
 
-    private Variable[][] AC_3(Variable[][] csp){
+    /**
+     * fonction de propagation des contrainte sur les arcs.
+     * @param csp ensemble de variable du problème dont les domains vont etre réduit
+     */
+    private void AC_3(Variable[][] csp){
         LinkedList<Pair<Variable,Variable>> queue = new LinkedList<>();
         int i = 0;
         int j = 0;
@@ -410,9 +403,14 @@ public class Resolver {
                 }
             }
         }
-        return csp;
     }
 
+    /**
+     * fonction testant pour un arc donnée si des valeurs du domains du membre de gauche de l'arc sont inconsitant avec le domaine du membre de droite.
+     * si c'est le cas la valeur est retiré du domaine de la variable.
+     * @param arc arc dont on étudit la consistance.
+     * @return true si le domaine de la variable à été modifié, false sinon.
+     */
     private boolean removeInconsistentValue(Pair<Variable, Variable> arc) {
         boolean removed = false;
         boolean inconsitent;
@@ -420,8 +418,9 @@ public class Resolver {
         for (Integer valueX:arc.getLeft().getDomains()) {
             inconsitent = true;
             for (Integer valueY: arc.getRight().getDomains()) {
-                if(!valueX.equals(valueY)){
+                if (!valueX.equals(valueY)) {
                     inconsitent = false;
+                    break;
                 }
             }
             if (inconsitent){

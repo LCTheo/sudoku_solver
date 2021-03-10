@@ -1,14 +1,11 @@
 package display;
 
 import resolver.Resolver;
-import resolver.Variable;
 
 import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
@@ -20,19 +17,13 @@ import java.util.Scanner;
 public class Display {
 
     //Fenêtre principale
-    private JFrame frame;
-
-    //Panel pour afficher les cases
-    private JPanel panel;
+    private final JFrame frame;
 
     //Affichage graphique de l'environnement : tableau 2D de 9 par 9. Chaque Label représente une case
-    private JLabel[][] tab_labels_ = new JLabel[9][9];
-
-    //Barre de menu pour la fenêtre
-    private JMenuBar menubar = new JMenuBar();
+    private final JLabel[][] tab_labels_ = new JLabel[9][9];
 
     //instance du resolver
-    private Resolver resolver;
+    private final Resolver resolver;
 
     /**
      * Constructeur (permet de créer la fenêtre, les cases, et le menu)
@@ -40,7 +31,8 @@ public class Display {
     public Display() {
         //Création de la fenetre principale
         frame = new JFrame();
-        this.panel = new JPanel();
+        //Panel pour afficher les cases
+        JPanel panel = new JPanel();
         //Création des bordures pour délimiter les cases.
         Border border_side = new MatteBorder(1,5,1,1,Color.black);
         Border border_top = new MatteBorder(5,1,1,1,Color.black);
@@ -82,7 +74,7 @@ public class Display {
         j = 0;
         while(i<9){
             while (j < 9) {
-                this.panel.add(this.tab_labels_[i][j]);
+                panel.add(this.tab_labels_[i][j]);
                 j++;
             }
             j=0;
@@ -90,9 +82,9 @@ public class Display {
         }
 
         //Affichage des cases selon une grille de 9 par 9
-        this.panel.setLayout(new GridLayout(9,9));
+        panel.setLayout(new GridLayout(9,9));
         frame.setLayout(new BorderLayout());
-        frame.add(this.panel, BorderLayout.CENTER);
+        frame.add(panel, BorderLayout.CENTER);
 
         //création du bouton pour lancer le resolver
         JPanel buttonPanel = new JPanel();
@@ -125,8 +117,10 @@ public class Display {
             }
         });
         menu.add(load);
-        this.menubar.add(menu);
-        frame.setJMenuBar(this.menubar);
+        //Barre de menu pour la fenêtre
+        JMenuBar menubar = new JMenuBar();
+        menubar.add(menu);
+        frame.setJMenuBar(menubar);
 
         frame.setPreferredSize(new Dimension(800, 800));
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -135,13 +129,13 @@ public class Display {
         frame.pack();
         frame.setVisible(true);
 
-        resolver = new Resolver(this);
+        resolver = new Resolver();
     }
 
     /**
      * Permet de charger le fichier .ss du sudoku sur l'affichage graphique
      * @param file le fichier à charger
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException Exeption si le fiichier ciblé n'ai pas trouvé
      */
     private void load(File file) throws FileNotFoundException {
 
@@ -176,7 +170,7 @@ public class Display {
         int j = 0;
         while (i < 9){
             while (j < 9){
-                tab_labels_[i][j].setText("");
+                deleteVariable(i, j);
                 j++;
             }
             j = 0;
@@ -190,7 +184,7 @@ public class Display {
      * @return true si le caractère est un integer, false sinon
      */
     private boolean isInteger(String valueOf) {
-        boolean valid = false;
+        boolean valid;
         try{
             Integer.parseInt(valueOf);
             valid = true;
