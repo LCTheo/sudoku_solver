@@ -212,7 +212,11 @@ public class Display {
     public void deleteVariable(int x, int y){
         this.tab_labels_[x][y].setText("");
     }
-
+    
+    /**
+    * Permet d'afficher la résolution gaphique trouvée pour le sudoku 
+    *
+    */
     public void runResolver(){
         Integer[][] sudoku = new Integer[9][9];
         int x = 0;

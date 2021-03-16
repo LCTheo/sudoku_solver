@@ -4,11 +4,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 
 /**
- * Classe représentant les variables qui compose la reprentation du probleme
+ * Classe représentant les variables qui composent la reprentation du probleme
  */
 public class Variable {
 
-    // Set de variable représentant les voisins de la variable. équivaux à la liste des contraintes binaires
+    // Set de variable représentant les voisins de la variable. équivaut à la liste des contraintes binaires
     private final HashSet<Variable> neighbors;
 
     // Set d'entier corespondant au domain de la variable
@@ -73,7 +73,7 @@ public class Variable {
     }
 
     /**
-     * Retire la valeur donné au domaine de la variable
+     * Retire la valeur donnée au domaine de la variable
      * @param value Valeur a retirer du domaine
      */
     public void removeFromDomains (int value){
